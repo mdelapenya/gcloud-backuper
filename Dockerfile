@@ -1,6 +1,7 @@
 FROM alpine:3.9
 
 ENV CLOUD_SDK_VERSION="297.0.1"
+ENV PATH="/google-cloud-sdk/bin:$PATH"
 
 RUN apk add --no-cache \
     bash \
