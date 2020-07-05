@@ -1,6 +1,9 @@
 FROM alpine:3.9
 
+ARG TZ='Europe/Madrid'
+
 ENV CLOUD_SDK_VERSION="297.0.1"
+ENV DEFAULT_TZ ${TZ}
 ENV PATH="/google-cloud-sdk/bin:$PATH"
 
 RUN apk add --no-cache \
@@ -12,13 +15,15 @@ RUN apk add --no-cache \
     mysql-client \
     openssh-client \
     py3-crcmod \
-    python3
+    python3 \
+    tzdata
 
 RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     tar xzf google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     rm google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     gcloud config set core/disable_usage_reporting true && \
     gcloud config set component_manager/disable_update_check true && \
-    gcloud config set metrics/environment github_docker_image
+    gcloud config set metrics/environment github_docker_image && \
+    cp /usr/share/zoneinfo/${DEFAULT_TZ} /etc/localtime
 
 ENTRYPOINT ["crond", "-f"]
