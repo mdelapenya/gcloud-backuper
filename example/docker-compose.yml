@@ -1,0 +1,47 @@
+version: '2.3'
+services:
+  app:
+    image: "nginx:1.19.1"
+    depends_on:
+      - "db"
+    restart: always
+    volumes:
+      - ./app:/usr/share/nginx/html
+  db:
+    image: "mysql:5.6"
+    environment:
+      - MYSQL_ROOT_PASSWORD=changeme
+      - MYSQL_DATABASE=database_name
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=rootpasswd --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 20s
+      retries: 10
+    restart: always
+    volumes:
+      - type: volume
+        source: mysql-data
+        target: /var/lib/mysql
+  cron:
+    image: "mdelapenya/gcloud-backuper:1.1.0"
+    restart: always
+    depends_on:
+      - "db"
+    volumes:
+      - ./crontab:/var/spool/cron/crontabs/root
+      - ./backup.sh:/usr/local/bin/backup
+      - ./backups-sql:/backups-sql
+      - ./app:/backups-filesystem
+      - ./google-cloud-project-name.json:/google-cloud-project-name.json
+    command: ["-l", "8", "-d", "8"]
+    environment:
+      DEFAULT_TZ: 'America/Los_Angeles'
+      GCLOUD_BUCKET: bucket-name-prod
+      GCLOUD_PROJECT_NAME: google-cloud-project-name
+      MYSQL_HOST: db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: changeme
+      MYSQL_DATABASE: database_name
+
+volumes:
+  mysql-data:
