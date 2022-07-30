@@ -1,4 +1,4 @@
-FROM alpine:3.9
+FROM --platform=$BUILDPLATFORM alpine:3.9
 
 ARG OS_ARCHITECTURE="x86_64"
 ARG TZ='Europe/Madrid'
