@@ -3,7 +3,7 @@ FROM alpine:3.9
 ARG OS_ARCHITECTURE="x86_64"
 ARG TZ='Europe/Madrid'
 
-ENV CLOUD_SDK_VERSION="297.0.1"
+ENV CLOUD_SDK_VERSION="394.0.0"
 ENV DEFAULT_TZ ${TZ}
 ENV PATH="/google-cloud-sdk/bin:$PATH"
 
